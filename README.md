@@ -47,7 +47,7 @@ public class Student {
     private String major;
     
     public int calculateGrade() {
-        int grade;    // This is a local variable
+        int grade;
         ...
         return grade;
     }
