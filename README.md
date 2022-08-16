@@ -2,111 +2,115 @@
 
 ## Learning Goals
 
-- Explain constructors
-- Create constructors in Java
+- Explain Instance Variables
+- Explain Instance Methods
 
-## Introduction
+## Instance Variables
 
-A **constructor** is a specific kind of method that is called when an object is
-instantiated. Constructors, like methods, can have parameters. Unlike methods,
-however, constructors do not have an explicit return type because they always
-return an object of the type of the class they are defined in.
+An **instance variable** is a variable that is declared _inside a class_ but not
+within a method. Instance variables belong to the object of the class, not the
+class itself. This means that when an object is created, it has its own copy
+of instance variables created along with it.
 
-Let's consider a `Student` class as an example, with fields for their name and
-major information:
+Let's look at our `Student` class from the last lesson:
 
 ```java
 public class Student {
     private String firstName;
     private String lastName;
     private String major;
+}
+```
 
-    public Student(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
+The attributes `firstName`, `lastName`, and `major` are all instance
+variables. Notice how the instance variables have an access modifier
+attached to it. Since all these attributes are `private`, we could even say
+that they are **private instance variables**. It is usually recommended to
+make these variables private to restrict other classes from using these
+variables directly.
+
+Instance variables also always get a default value. If we don't explicitly
+assign a value to an instance variable, then the instance variable still has a
+value.
+
+### Instance Variables vs. Local Variables
+
+Instance variables are **not** the same as local variables. A **local variable**
+is declared within a method, not at the class level.
+
+For example, say our `Student` class has a method called `calculateGrade`:
+
+```java
+public class Student {
+    private String firstName;
+    private String lastName;
+    private String major;
+    
+    public int calculateGrade() {
+        int grade;
+        ...
+        return grade;
     }
 }
 ```
 
-In this example, the only constructor we are providing is one that takes in both
-the `firstName` and the `lastName` as parameters. We will look at a different
-implementation of this constructor as well as another constructor later, but for
-now let's inspect the structure of this one constructor:
+The variable `grade` declared in the `calculateGrade` would be a local variable.
+It cannot be used outside the method nor does it have a default value. Local
+variables must be initialized before use; otherwise we will run into a
+compilation error.
 
-1. As stated, the constructor does not specify a return type because it always
-   returns an object of the type of the class it's defined in, so in this case
-   our constructor will return an object of type `Student`.
-2. The `this` keyword is used to make a reference to the instance of the
-   `Student` class that we are in the process of constructing. We need to use it
-   here to make a distinction between the `firstName` variable that belongs to
-   this instance we are building vs the `firstName` variable that was passed in
-   as a variable to the constructor.
-3. Using the `this` keyword, we initialize the value of the `firstName` variable
-   of the `Student` instance we're building with the value of the `firstName`
-   variable that was passed into the constructor. And we do the same thing with
-   `lastName`.
+## Instance Methods
 
-By convention, constructor parameters usually use the same variable names as the
-properties in the class they are meant to initialize, which is why we need to
-use the `this` keyword to clearly indicate which variable we are referring to in
-the constructor. It is possible, however, to use different names for the
-parameters into the constructor, in which case the `this` keyword does not need
-to be used because there is no ambiguity in the variable names.
+An **instance method** is a method that belongs to the object of the class, not
+the class itself. This means that we must create an object of that class prior
+to using any of its methods. An instance method usually directly correlates with
+the object itself. For example, in our `Student` class, if we were to calculate
+Suzie's grade, it most likely will be different from Dustin's grade. This is
+where instance methods come in handy.
 
-Here is a version of the constructor that does that, just for reference. Note
-that we will continue to use the generally accepted naming convention in all
-subsequent examples.
+In the above example, we can say that the `calculateGrade()` method is an
+instance method. In order to call it, we would need to instantiate a
+`Student` object:
 
 ```java
-public Student(String inputFirstName, String inputLastName) {
-  firstName = inputFirstName;
-  lastName = inputLastName;
+Student suzie = new Student("Suzie", "Bingham", "Computer Science");
+int suzieGrade = suzie.calculateGrade();
+```
+
+### Instance Methods vs. Static Methods
+
+There are some methods that do not need a reference to an object to call a
+method. These methods are called **static methods**. We remember the `static`
+keyword from the Non-Access Modifiers lesson. When a method has the keyword
+`static` in its header, then it can be called without creating an instance of a
+class.
+
+Let's go back to our `Bicycle` class for a minute:
+
+```java
+public class Bicycle {
+    private String color;
+    private int height;
+    
+    public void ride() {
+        System.out.println("We're going for a ride! Whee!");
+    }
 }
 ```
 
-You might have noticed that neither version of the constructors we have shared so
-far assign any value to the `major` variable. This not a good behavior, as we
-should always try to be explicit about values for all our fields and include
-default values if none are provided through the constructor.
-
-There are 2 important things to note here:
-
-1. Not all fields can have default values - for example, what could a "default"
-   first name and last name possibly be for a student? Sure it could be "John
-   Doe" or "Jane Doe", but that doesn't seem very helpful in the handling of
-   student information.
-2. Some fields do make sense to have default value - for example, we could
-   easily imagine that a student could be initialized in our system before they
-   have a chance to define their major. In which case, we would default their
-   `major` field to a value that indicates that they haven't picked a major yet.
-
-Here is an example of our constructor that does exactly that:
+Currently, the `ride()` method is considered an instance method; however,
+isn't going on a bike ride the same for whether John rides his bike or
+Claire rides her bike? This method could be shared across all instances of the
+same class. When this happens, we could make it a `static` method by applying
+the `static` non-access modifier to the method heading like so:
 
 ```java
-public Student(String firstName, String lastName) {
-  this.firstName = firstName;
-  this.lastName = lastName;
-  this.major = "Undeclared";
+public class Bicycle {
+    private String color;
+    private int height;
+    
+    public static void ride() {
+        System.out.println("We're going for a ride! Whee!");
+    }
 }
 ```
-
-We also have the ability to have multiple constructors
-in a single class. In this example, we can add a constructor that accepts a
-declared major in addition to the student's first and last name:
-
-```java
-    public Student(String firstName, String lastName) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.major = "Undeclared";
-    }
-
-    public Student(String firstName, String lastName, String major) {
-        this(firstName, lastName);
-        this.major = major;
-    }
-```
-
-Note that the new constructor makes use of the previously defined constructor to
-initialize the two fields that were already supported and then proceeds to
-initialize the additional field for which it received a value as a parameter.
